@@ -6,11 +6,11 @@
 
 A local-first personal knowledge base with Markdown, wiki links, and an interactive knowledge graph.
 
-[Features](#features) · [Getting started](#getting-started) · [Architecture](docs/ARCHITECTURE.md) · [فارسی](docs/README.fa.md)
+[Features](#features) · [Getting started](#getting-started) · [Design](docs/DESIGN.md) · [Architecture](docs/ARCHITECTURE.md) · [فارسی](docs/README.fa.md)
 
 ![Next.js](https://img.shields.io/badge/Next.js-16-17171d?logo=nextdotjs) ![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript) ![Tailwind CSS](https://img.shields.io/badge/Tailwind-4-38bdf8?logo=tailwindcss)
 
-![MindGraph workspace](docs/screenshots/dashboard-dark.png)
+![MindGraph workspace](docs/screenshots/dashboard-light.png)
 
 </div>
 
