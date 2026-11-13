@@ -1,16 +1,321 @@
 "use client";
 import { useState } from "react";
-import { useRouter,useSearchParams } from "next/navigation";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
-import { ArrowUpRight, Download, FileText, Plus, Search, Star, Trash2, CheckCheck, Link2 } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { MarkdownPreview } from "./markdown-preview";
+import {
+  ArrowUpRight,
+  Download,
+  FileText,
+  Plus,
+  Search,
+  Star,
+  Trash2,
+  CheckCheck,
+  Link2,
+} from "lucide-react";
 import Link from "next/link";
 import { useNotes } from "./provider";
-import { searchNotes,wikiLinks } from "./model";
+import { searchNotes, wikiLinks } from "./model";
 import { usePreferences } from "@/components/preferences";
-import { EmptyState, Modal,PageTitle } from "@/components/ui";
-export function NoteEditor(){const {data,createNote,patchNote,deleteNote,error}=useNotes();const {t}=usePreferences();const params=useSearchParams();const router=useRouter();const [query,setQuery]=useState("");const [mode,setMode]=useState("split");const [remove,setRemove]=useState(false);const [savedId,setSavedId]=useState("");const requestedId=params.get("id");const note=requestedId?data.notes.find(n=>n.id===requestedId):data.notes[0];const notes=searchNotes(data.notes,query);const backlinks=note?data.notes.filter(n=>n.id!==note.id&&wikiLinks(n.content).some(title=>title.toLowerCase()===note.title.toLowerCase())):[];
- const newNote=()=>router.push("/dashboard/notes?id="+createNote(t("Untitled note","یادداشت بدون عنوان")));
- const download=()=>{if(!note)return;const url=URL.createObjectURL(new Blob([note.content],{type:"text/markdown;charset=utf-8"}));const a=document.createElement("a");a.href=url;a.download=(note.title.replace(/[^\p{L}\p{N}\s_-]/gu,"")||"note")+".md";a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);};
- return <><PageTitle eyebrow={t("WORDS TODAY. CONNECTIONS TOMORROW.","کلمات امروز؛ ارتباط‌های فردا")} title={t("Your thoughts, at home.","اینجا، خانه فکرهای توست.")} description={t("Write freely. Use [[Note title]] to connect your ideas. Changes save automatically.","آزادانه بنویس؛ با [[عنوان یادداشت]] ایده‌ها را وصل کن. تغییرات خودکار ذخیره می‌شوند.")} action={<button className="button primary" onClick={newNote}><Plus size={15}/>{t("New note","یادداشت جدید")}</button>}/><div className="editor-layout"><aside className="editor-list"><label className="search-field"><Search size={14}/><input aria-label={t("Search notes","جست‌وجوی یادداشت‌ها")} value={query} onChange={e=>setQuery(e.target.value)} placeholder={t("Find a thought…","فکری را پیدا کن…")}/></label><p className="eyebrow !mt-5 !mb-3 px-2">{notes.length} {t("NOTES","یادداشت")}</p>{notes.map(n=><button key={n.id} onClick={()=>router.push("/dashboard/notes?id="+n.id)} className={"editor-list-item "+(note?.id===n.id?"active":"")}><h3>{n.title||t("Untitled note","یادداشت بدون عنوان")}</h3><p>{n.tags.map(tag=>"#"+tag).join(" ")||t("A fresh thought","یک فکر تازه")}</p></button>)}{!notes.length&&<p className="text-xs muted p-3">{t("No matching notes","یادداشتی یافت نشد")}</p>}</aside>{note?<article className="editor-content" key={note.id}><div className="flex gap-3 items-center"><FileText size={19} className="accent-text"/><input className="editor-title" aria-label={t("Note title","عنوان یادداشت")} maxLength={200} value={note.title} onChange={e=>patchNote(note.id,{title:e.target.value})}/><button className="icon-button" aria-label={t("Toggle favorite","تغییر علاقه‌مندی")} aria-pressed={note.favorite} onClick={()=>patchNote(note.id,{favorite:!note.favorite})}><Star size={17} fill={note.favorite?"currentColor":"none"} className={note.favorite?"accent-text":""}/></button></div><label className="mt-2"><span className="sr-only">{t("Tags separated by commas","برچسب‌ها با کاما جدا شوند")}</span><input key={note.id+"tags"} className="!bg-transparent !border-0 !px-0 !text-[11px]" defaultValue={note.tags.join(", ")} placeholder={t("Add tags, separated by commas…","برچسب‌ها را با کاما جدا کن…")} onBlur={e=>{const tags=[...new Set(e.target.value.split(/[,،]/).map(v=>v.trim().slice(0,40)).filter(Boolean))].slice(0,30);patchNote(note.id,{tags});e.target.value=tags.join(", ");}}/></label><div className="editor-toolbar"><div className="tabs" role="tablist" aria-label={t("Editor mode","حالت ویرایشگر")}>{[["write",t("Write","نوشتن")],["preview",t("Preview","پیش‌نمایش")],["split",t("Split view","نمای دوگانه")]].map(([value,label])=><button role="tab" aria-selected={mode===value} key={value} onClick={()=>setMode(value)}>{label}</button>)}</div><div className="flex items-center gap-2"><span className="text-[9px] muted flex gap-1 items-center" role="status"><CheckCheck size={12}/>{error?t("Session only","فقط این نشست"):t("Saved locally","ذخیره محلی")}</span><button className="icon-button" onClick={download} aria-label={t("Download Markdown","دانلود Markdown")}><Download size={15}/></button><button className="icon-button" onClick={()=>setRemove(true)} aria-label={t("Delete note","حذف یادداشت")}><Trash2 size={15}/></button></div></div><div className={"editor-panels "+mode}>{mode!=="preview"&&<textarea className="editor-textarea" aria-label={t("Markdown content","محتوای Markdown")} maxLength={200000} value={note.content} onChange={e=>patchNote(note.id,{content:e.target.value})} placeholder={t("Start with a thought…\n\nUse [[Note title]] to make a connection.","با یک فکر شروع کن…\n\nبا [[عنوان یادداشت]] یک ارتباط بساز.")}/ >}{mode!=="write"&&<div className="markdown"><ReactMarkdown remarkPlugins={[remarkGfm]} components={{a:({href,children,...props})=><a {...props} href={href} rel="noreferrer" onClick={e=>{if(href?.startsWith("#wiki:")){e.preventDefault();const title=decodeURIComponent(href.slice(6));const existing=data.notes.find(n=>n.title.toLowerCase()===title.toLowerCase());const next=existing?.id||createNote(title);router.push("/dashboard/notes?id="+next);}}}>{children}</a>}}>{note.content.replace(/\[\[([^\]\n]+)\]\]/g,(_,title:string)=>`[${title}](#wiki:${encodeURIComponent(title.trim())})`)||t("Your preview will grow with your ideas.","پیش‌نمایش همراه ایده‌هایت رشد می‌کند.")}</ReactMarkdown></div>}</div><div className="backlinks"><div className="flex justify-between items-center mb-3"><h3 className="!text-xs flex gap-2 items-center"><Link2 size={14} className="accent-text"/>{t("Backlinks","پیوندهای ورودی")} <span className="badge">{backlinks.length}</span></h3><span className="muted text-[9px]">{note.content.trim()?note.content.trim().split(/\s+/).length:0} {t("words","کلمه")}</span></div>{backlinks.map(n=><Link key={n.id} href={"/dashboard/notes?id="+n.id} className="tag me-2 mb-2">{n.title}<ArrowUpRight size={11}/></Link>)}{!backlinks.length&&<p className="muted text-[10px]">{t("No notes link here yet. Every connection starts somewhere.","هنوز یادداشتی به اینجا وصل نیست؛ هر ارتباط از جایی شروع می‌شود.")}</p>}</div></article>:<EmptyState icon={<FileText size={24}/>} title={requestedId?t("Note not found","یادداشت پیدا نشد"):t("Room for a fresh thought","جایی برای یک فکر تازه")} description={t("Create a note or choose one from the list.","یادداشتی بساز یا از فهرست انتخاب کن.")} action={<button className="button primary" onClick={newNote}>{t("Create a note","ساخت یادداشت")}</button>}/>}</div><Modal open={remove} onClose={()=>setRemove(false)} title={t("Let this thought go?","این فکر را رها کنیم؟")}><p className="muted text-sm">{t("This note will be permanently deleted. Export it first if you want to keep a copy.","این یادداشت برای همیشه حذف می‌شود. برای نگه داشتن یک نسخه، اول آن را دانلود کن.")}</p><div className="form-actions mt-6"><button className="button" onClick={()=>setRemove(false)}>{t("Keep it","نگهش دار")}</button><button className="button danger" onClick={()=>{if(note){setSavedId(note.id);deleteNote(note.id);}setRemove(false);router.replace("/dashboard/notes");}}>{t("Delete note","حذف یادداشت")}</button></div></Modal>{savedId&&<p className="sr-only" role="status">{t("Note deleted","یادداشت حذف شد")}</p>}</>;
+import { EmptyState, Modal, PageTitle } from "@/components/ui";
+export function NoteEditor() {
+  const { data, createNote, patchNote, deleteNote, error } = useNotes();
+  const { t } = usePreferences();
+  const params = useSearchParams();
+  const router = useRouter();
+  const [query, setQuery] = useState("");
+  const [mode, setMode] = useState("split");
+  const [remove, setRemove] = useState(false);
+  const [savedId, setSavedId] = useState("");
+  const requestedId = params.get("id");
+  const note = requestedId
+    ? data.notes.find((n) => n.id === requestedId)
+    : data.notes[0];
+  const notes = searchNotes(data.notes, query);
+  const backlinks = note
+    ? data.notes.filter(
+        (n) =>
+          n.id !== note.id &&
+          wikiLinks(n.content).some(
+            (title) => title.toLowerCase() === note.title.toLowerCase(),
+          ),
+      )
+    : [];
+  const newNote = () =>
+    router.push(
+      "/dashboard/notes?id=" +
+        createNote(t("Untitled note", "یادداشت بدون عنوان")),
+    );
+  const download = () => {
+    if (!note) return;
+    const url = URL.createObjectURL(
+      new Blob([note.content], { type: "text/markdown;charset=utf-8" }),
+    );
+    const a = document.createElement("a");
+    a.href = url;
+    a.download =
+      (note.title.replace(/[^\p{L}\p{N}\s_-]/gu, "") || "note") + ".md";
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  };
+  return (
+    <>
+      <PageTitle
+        eyebrow={t(
+          "WORDS TODAY. CONNECTIONS TOMORROW.",
+          "کلمات امروز؛ ارتباط‌های فردا",
+        )}
+        title={t("Your thoughts, at home.", "اینجا، خانه فکرهای توست.")}
+        description={t(
+          "Write freely. Use [[Note title]] to connect your ideas. Changes save automatically.",
+          "آزادانه بنویس؛ با [[عنوان یادداشت]] ایده‌ها را وصل کن. تغییرات خودکار ذخیره می‌شوند.",
+        )}
+        action={
+          <button className="button primary" onClick={newNote}>
+            <Plus size={15} />
+            {t("New note", "یادداشت جدید")}
+          </button>
+        }
+      />
+      <div className="editor-layout">
+        <aside className="editor-list">
+          <label className="search-field">
+            <Search size={14} />
+            <input
+              aria-label={t("Search notes", "جست‌وجوی یادداشت‌ها")}
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder={t("Find a thought…", "فکری را پیدا کن…")}
+            />
+          </label>
+          <p className="eyebrow !mt-5 !mb-3 px-2">
+            {notes.length} {t("NOTES", "یادداشت")}
+          </p>
+          {notes.map((n) => (
+            <button
+              key={n.id}
+              onClick={() => router.push("/dashboard/notes?id=" + n.id)}
+              className={
+                "editor-list-item " + (note?.id === n.id ? "active" : "")
+              }
+            >
+              <h3>{n.title || t("Untitled note", "یادداشت بدون عنوان")}</h3>
+              <p>
+                {n.tags.map((tag) => "#" + tag).join(" ") ||
+                  t("A fresh thought", "یک فکر تازه")}
+              </p>
+            </button>
+          ))}
+          {!notes.length && (
+            <p className="text-xs muted p-3">
+              {t("No matching notes", "یادداشتی یافت نشد")}
+            </p>
+          )}
+        </aside>
+        {note ? (
+          <article className="editor-content" key={note.id}>
+            <div className="flex gap-3 items-center">
+              <FileText size={19} className="accent-text" />
+              <input
+                className="editor-title"
+                aria-label={t("Note title", "عنوان یادداشت")}
+                maxLength={200}
+                value={note.title}
+                onChange={(e) => patchNote(note.id, { title: e.target.value })}
+              />
+              <button
+                className="icon-button"
+                aria-label={t("Toggle favorite", "تغییر علاقه‌مندی")}
+                aria-pressed={note.favorite}
+                onClick={() => patchNote(note.id, { favorite: !note.favorite })}
+              >
+                <Star
+                  size={17}
+                  fill={note.favorite ? "currentColor" : "none"}
+                  className={note.favorite ? "accent-text" : ""}
+                />
+              </button>
+            </div>
+            <label className="mt-2">
+              <span className="sr-only">
+                {t("Tags separated by commas", "برچسب‌ها با کاما جدا شوند")}
+              </span>
+              <input
+                key={note.id + "tags"}
+                className="!bg-transparent !border-0 !px-0 !text-[11px]"
+                defaultValue={note.tags.join(", ")}
+                placeholder={t(
+                  "Add tags, separated by commas…",
+                  "برچسب‌ها را با کاما جدا کن…",
+                )}
+                onBlur={(e) => {
+                  const tags = [
+                    ...new Set(
+                      e.target.value
+                        .split(/[,،]/)
+                        .map((v) => v.trim().slice(0, 40))
+                        .filter(Boolean),
+                    ),
+                  ].slice(0, 30);
+                  patchNote(note.id, { tags });
+                  e.target.value = tags.join(", ");
+                }}
+              />
+            </label>
+            <div className="editor-toolbar">
+              <div
+                className="tabs"
+                role="tablist"
+                aria-label={t("Editor mode", "حالت ویرایشگر")}
+              >
+                {[
+                  ["write", t("Write", "نوشتن")],
+                  ["preview", t("Preview", "پیش‌نمایش")],
+                  ["split", t("Split view", "نمای دوگانه")],
+                ].map(([value, label]) => (
+                  <button
+                    role="tab"
+                    aria-selected={mode === value}
+                    key={value}
+                    onClick={() => setMode(value)}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+              <div className="flex items-center gap-2">
+                <span
+                  className="text-[9px] muted flex gap-1 items-center"
+                  role="status"
+                >
+                  <CheckCheck size={12} />
+                  {error
+                    ? t("Session only", "فقط این نشست")
+                    : t("Saved locally", "ذخیره محلی")}
+                </span>
+                <button
+                  className="icon-button"
+                  onClick={download}
+                  aria-label={t("Download Markdown", "دانلود Markdown")}
+                >
+                  <Download size={15} />
+                </button>
+                <button
+                  className="icon-button"
+                  onClick={() => setRemove(true)}
+                  aria-label={t("Delete note", "حذف یادداشت")}
+                >
+                  <Trash2 size={15} />
+                </button>
+              </div>
+            </div>
+            <div className={"editor-panels " + mode}>
+              {mode !== "preview" && (
+                <textarea
+                  className="editor-textarea"
+                  aria-label={t("Markdown content", "محتوای Markdown")}
+                  maxLength={200000}
+                  value={note.content}
+                  onChange={(e) =>
+                    patchNote(note.id, { content: e.target.value })
+                  }
+                  placeholder={t(
+                    "Start with a thought…\n\nUse [[Note title]] to make a connection.",
+                    "با یک فکر شروع کن…\n\nبا [[عنوان یادداشت]] یک ارتباط بساز.",
+                  )}
+                />
+              )}
+              {mode !== "write" && <MarkdownPreview content={note.content} />}
+            </div>
+            <div className="backlinks">
+              <div className="flex justify-between items-center mb-3">
+                <h3 className="!text-xs flex gap-2 items-center">
+                  <Link2 size={14} className="accent-text" />
+                  {t("Backlinks", "پیوندهای ورودی")}{" "}
+                  <span className="badge">{backlinks.length}</span>
+                </h3>
+                <span className="muted text-[9px]">
+                  {note.content.trim()
+                    ? note.content.trim().split(/\s+/).length
+                    : 0}{" "}
+                  {t("words", "کلمه")}
+                </span>
+              </div>
+              {backlinks.map((n) => (
+                <Link
+                  key={n.id}
+                  href={"/dashboard/notes?id=" + n.id}
+                  className="tag me-2 mb-2"
+                >
+                  {n.title}
+                  <ArrowUpRight size={11} />
+                </Link>
+              ))}
+              {!backlinks.length && (
+                <p className="muted text-[10px]">
+                  {t(
+                    "No notes link here yet. Every connection starts somewhere.",
+                    "هنوز یادداشتی به اینجا وصل نیست؛ هر ارتباط از جایی شروع می‌شود.",
+                  )}
+                </p>
+              )}
+            </div>
+          </article>
+        ) : (
+          <EmptyState
+            icon={<FileText size={24} />}
+            title={
+              requestedId
+                ? t("Note not found", "یادداشت پیدا نشد")
+                : t("Room for a fresh thought", "جایی برای یک فکر تازه")
+            }
+            description={t(
+              "Create a note or choose one from the list.",
+              "یادداشتی بساز یا از فهرست انتخاب کن.",
+            )}
+            action={
+              <button className="button primary" onClick={newNote}>
+                {t("Create a note", "ساخت یادداشت")}
+              </button>
+            }
+          />
+        )}
+      </div>
+      <Modal
+        open={remove}
+        onClose={() => setRemove(false)}
+        title={t("Let this thought go?", "این فکر را رها کنیم؟")}
+      >
+        <p className="muted text-sm">
+          {t(
+            "This note will be permanently deleted. Export it first if you want to keep a copy.",
+            "این یادداشت برای همیشه حذف می‌شود. برای نگه داشتن یک نسخه، اول آن را دانلود کن.",
+          )}
+        </p>
+        <div className="form-actions mt-6">
+          <button className="button" onClick={() => setRemove(false)}>
+            {t("Keep it", "نگهش دار")}
+          </button>
+          <button
+            className="button danger"
+            onClick={() => {
+              if (note) {
+                setSavedId(note.id);
+                deleteNote(note.id);
+              }
+              setRemove(false);
+              router.replace("/dashboard/notes");
+            }}
+          >
+            {t("Delete note", "حذف یادداشت")}
+          </button>
+        </div>
+      </Modal>
+      {savedId && (
+        <p className="sr-only" role="status">
+          {t("Note deleted", "یادداشت حذف شد")}
+        </p>
+      )}
+    </>
+  );
 }
