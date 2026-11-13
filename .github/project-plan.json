@@ -1,0 +1,43 @@
+{
+  "owner": "mmdbazooka",
+  "repository": "mmdbazooka/MindGraph",
+  "title": "MindGraph \u2014 Product roadmap",
+  "description": "A local-first knowledge workspace for connected thinking.",
+  "items": [
+    {
+      "title": "Design system, product landing & bilingual experience",
+      "status": "Done",
+      "body": "Responsive product presentation, Tailwind CSS, local fonts, English/Persian with RTL, and persistent light/dark preferences."
+    },
+    {
+      "title": "Markdown editing & connected notes",
+      "status": "Done",
+      "body": "Create, edit, search, favorite and delete notes. GFM rendering, wiki links, backlinks, and Markdown export."
+    },
+    {
+      "title": "Knowledge graph & personal library",
+      "status": "Done",
+      "body": "Keyboard-accessible SVG graph with zoom, topic filters, and node navigation. Searchable library with favorites and sorting."
+    },
+    {
+      "title": "Local persistence & portable backups",
+      "status": "Done",
+      "body": "Versioned Zod validation, cross-tab synchronization, storage error feedback, validated JSON import and full-workspace export."
+    },
+    {
+      "title": "Automated verification & portfolio documentation",
+      "status": "Done",
+      "body": "Production build, strict TypeScript, ESLint, Vitest domain tests, and Playwright browser tests. Real screenshots and architecture documentation."
+    },
+    {
+      "title": "Explore offline installation (PWA)",
+      "status": "Todo",
+      "body": "Optional future iteration; outside the implemented v1 scope."
+    },
+    {
+      "title": "Publish a public deployment",
+      "status": "Todo",
+      "body": "Choose a hosting provider and connect this repository. No deployment has been created by this setup."
+    }
+  ]
+}
