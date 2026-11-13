@@ -1,7 +1,7 @@
 "use client";
 import {
   ArrowUpRight,
-  Network,
+  Sprout,
   Check,
   Languages,
   Moon,
@@ -36,7 +36,7 @@ export function PreferencesControls() {
 export function Logo({ compact = false }: { compact?: boolean }) {
   return (
     <Link href="/" className="logo">
-      <span className="logo-mark">{<Network size={21} />}</span>
+      <span className="logo-mark">{<Sprout size={21} />}</span>
       {!compact && (
         <span>
           MindGraph<span className="logo-dot">.</span>

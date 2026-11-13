@@ -14,14 +14,14 @@ export function PreferencesProvider({
   children: React.ReactNode;
 }) {
   const [locale, setLocale] = useState<"en" | "fa">("en");
-  const [theme, setTheme] = useState<"dark" | "light">("dark");
+  const [theme, setTheme] = useState<"dark" | "light">("light");
   useEffect(() => {
     try {
       const p = JSON.parse(
         localStorage.getItem("mindgraph-preferences") || "{}",
       );
       if (p.locale === "fa") setLocale("fa");
-      if (p.theme === "light") setTheme("light");
+      if (p.theme === "light" || p.theme === "dark") setTheme(p.theme);
     } catch {
       /* Defaults remain usable when browser storage is unavailable. */
     }

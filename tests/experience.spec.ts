@@ -12,8 +12,12 @@ test("landing, Persian RTL, preferences, and responsive navigation", async ({
   await expect(page.locator("html")).toHaveAttribute("lang", "fa");
   await page.reload();
   await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
+  const previousTheme = await page.locator("html").getAttribute("data-theme");
   await page.getByRole("button", { name: "تغییر پوسته" }).click();
-  await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+  await expect(page.locator("html")).toHaveAttribute(
+    "data-theme",
+    previousTheme === "light" ? "dark" : "light",
+  );
   await page.getByRole("button", { name: "تغییر به انگلیسی" }).click();
   await page.getByRole("link", { name: "Open workspace", exact: true }).click();
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();

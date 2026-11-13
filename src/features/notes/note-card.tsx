@@ -30,8 +30,10 @@ export function NoteCard({ note }: { note: Note }) {
         </button>
       </div>
       <Link href={"/dashboard/notes?id=" + note.id}>
-        <h3>{note.title || t("Untitled note", "یادداشت بدون عنوان")}</h3>
-        <p className="mt-3">
+        <h3 dir="auto">
+          {note.title || t("Untitled note", "یادداشت بدون عنوان")}
+        </h3>
+        <p className="mt-3" dir="auto">
           {note.content.replace(/[#*`>\[\]]/g, "").slice(0, 190) ||
             t(
               "An empty page full of possibilities.",

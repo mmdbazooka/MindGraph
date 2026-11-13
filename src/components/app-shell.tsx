@@ -95,7 +95,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               {t("Personal workspace", "فضای کار شخصی")}
             </p>
             <p className="muted text-[9px]">
-              {t("A little space of your own", "یک گوشه برای خودت")}
+              {t(
+                "A notebook for a wandering mind",
+                "دفتری برای فکرهای پرسه‌زن",
+              )}
             </p>
           </div>
         </div>
@@ -135,7 +138,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           }}
         >
           <p className="text-[11px] accent-text font-semibold">
-            {t("A thought worth keeping?", "فکری برای نگه داشتن؟")}
+            {t("A note to your future self", "یادداشتی برای خود آینده‌ات")}
           </p>
           <p className="text-[10px] muted mt-2">
             {t(
@@ -156,8 +159,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </div>
           <p className="text-[9px] muted mt-3">
             {t(
-              "No account. No cloud. Just you.",
-              "بدون حساب. بدون ابر. فقط تو.",
+              "Yours to write. Yours to keep.",
+              "برای نوشتن تو؛ برای نگه داشتن تو.",
             )}
           </p>
         </div>
@@ -179,10 +182,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </button>
           </div>
           <div className="flex items-center gap-3">
-            <span className="badge hidden sm:inline-flex">
-              <span className="status-dot" />
-              {t("Local workspace", "فضای محلی")}
-            </span>
             <PreferencesControls />
           </div>
         </header>
