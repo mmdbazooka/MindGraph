@@ -20,10 +20,6 @@ export default function Landing() {
     <div className="notebook-landing">
       <nav className="notebook-nav">
         <Logo />
-        <div className="notebook-nav-links">
-          <a href="#the-idea">{t("The idea", "داستانش چیست؟")}</a>
-          <a href="#inside">{t("A look inside", "نگاهی به داخل")}</a>
-        </div>
         <div className="flex items-center gap-4">
           <PreferencesControls />
           <Link className="button primary" href="/dashboard">
