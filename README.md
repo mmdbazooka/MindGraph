@@ -17,7 +17,7 @@ A local-first personal knowledge base with Markdown, wiki links, and an interact
 ## Features
 
 - A full product landing page and five dedicated dashboard pages.
-- Markdown editor with write, preview, and split views; GFM tables, task lists, and code blocks.
+- Markdown editor with write, preview, and split views. GFM tables, task lists, and code blocks.
 - Connect ideas with `[[Note title]]`, navigate backlinks, and create notes from unresolved links.
 - Interactive SVG knowledge graph with zoom, keyboard navigation, and topic filtering.
 - Instant content/tag search, favorites, topic browsing, and Markdown downloads.
